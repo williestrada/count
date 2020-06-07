@@ -203,7 +203,6 @@ function Count({navigation}) {
       dDate____ = countDtl[nIndex].Date____;
 
       array_move(countDtl, nIndex, 0); //Move item to 1st line
-      setTxtSearch(cDescript); //HiLite barcode
     }
 
     let newCount = {
@@ -231,7 +230,7 @@ function Count({navigation}) {
     setShowProdList(0);
     setShowCounList(winHeight);
     setOtherCde('');
-    //
+    setTxtSearch(cDescript); //HiLite barcode
     if (!cDescript.includes('masterfile')) {
       flatcount.current.scrollToIndex({animated: true, index: 0});
     }
