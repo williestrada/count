@@ -98,7 +98,7 @@ export async function countToCSV(aCount = null, clearData) {
   }
 
   let csvHeader =
-    'RecordId,Date____,OtherCde,Descript,Quantity,Location,UserName,DeviceId' +
+    'RecordId,Date____,OtherCde,Descript,Quantity,ItemCode,Location,UserName,DeviceId' +
     '\r\n';
   let csvStr = '';
   let csvData = '';
@@ -109,6 +109,7 @@ export async function countToCSV(aCount = null, clearData) {
     let OtherCde = count.OtherCde;
     let Descript = count.Descript.replace(/,|_/g, ';'); //remove commas in text field
     let Quantity = count.Quantity;
+    let ItemCode = count.ItemCode;
     let Location = count.Location;
     let UserName = count.UserName;
     let DeviceId = count.DeviceId;
@@ -123,6 +124,8 @@ export async function countToCSV(aCount = null, clearData) {
       Descript +
       ',' +
       Quantity +
+      ',' +
+      ItemCode +
       ',' +
       Location +
       ',' +
@@ -146,7 +149,7 @@ export async function salesToCSV(aSales = null, clearData) {
   }
 
   let csvHeader =
-    'RecordId,Date____,OtherCde,Descript,Quantity,ItemPrce,Location,DeviceId' +
+    'RecordId,Date____,OtherCde,Descript,Quantity,ItemCode,ItemPrce,Location,DeviceId' +
     '\r\n';
   let csvStr = '';
   let csvData = '';
@@ -157,6 +160,7 @@ export async function salesToCSV(aSales = null, clearData) {
     let OtherCde = sales.OtherCde;
     let Descript = sales.Descript.replace(/,|_/g, ';'); //remove commas in text field
     let Quantity = sales.Quantity;
+    let ItemCode = sales.ItemCode;
     let ItemPrce = sales.ItemPrce;
     let Location = sales.Location;
     let DeviceId = sales.DeviceId;
@@ -170,6 +174,8 @@ export async function salesToCSV(aSales = null, clearData) {
       Descript +
       ',' +
       Quantity +
+      ',' +
+      ItemCode +
       ',' +
       ItemPrce +
       ',' +
@@ -245,11 +251,96 @@ async function exportToCSV(csvData, cTitle) {
   }
 }
 
-export async function fetchSalesDb() {
-  await fetch('192.168.68.106:8082/findSales')
+// export async function fetchRetailDb() {
+//   await fetch('http://192.168.68.106:5000/findInven')
+//     .then(response => response.json())
+//     .then(data => {
+//       console.log('Inventory data fetched', data);
+//       return data;
+//     })
+//     .catch(error => {
+//       console.log(error);
+//     });
+// }
+
+export async function addCountDb(count) {
+  await fetch('http://192.168.68.106:5000/count', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(count),
+  })
     .then(response => response.json())
     .then(data => {
-      console.log('Sales data fetched', data);
-      return data;
+      //console.log('Count data added', data);
+    })
+    .catch(error => {
+      console.log(error);
+    });
+}
+
+export async function editCountDb(count, cRecordId) {
+  await fetch('http://192.168.68.106:5000/count/' + cRecordId, {
+    method: 'PATCH',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(count),
+  })
+    .then(response => response.json())
+    .then(data => {
+      //console.log('Count data edited', data);
+    })
+    .catch(error => {
+      console.log(error);
+    });
+}
+
+export async function deleteCountDb(cRecordId) {
+  await fetch('http://192.168.68.106:5000/count/' + cRecordId, {
+    method: 'DELETE',
+    headers: {'Content-Type': 'application/json'},
+  })
+    .then(response => response.json())
+    .catch(error => {
+      console.log(error);
+    });
+}
+
+export async function addSalesDb(sales) {
+  await fetch('http://192.168.68.106:5000/sales', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(sales),
+  })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Sales data added', data);
+    })
+    .catch(error => {
+      console.log(error);
+    });
+}
+
+export async function editSalesDb(sales, cRecordId) {
+  await fetch('http://192.168.68.106:5000/sales/' + cRecordId, {
+    method: 'PATCH',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(sales),
+  })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Sales data edited', data);
+    })
+    .catch(error => {
+      console.log(error);
+    });
+}
+
+export async function deleteSalesDb(cRecordId) {
+  await fetch('http://192.168.68.106:5000/sales/' + cRecordId, {
+    method: 'DELETE',
+    headers: {'Content-Type': 'application/json'},
+  })
+    .then(response => response.json())
+    .catch(error => {
+      console.log(error);
     });
 }

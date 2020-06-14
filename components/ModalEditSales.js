@@ -11,7 +11,7 @@ import {
   Keyboard,
 } from 'react-native';
 import UserContext from './UserContext';
-import {saveSales} from '../src/RetailAPI';
+import {saveSales, editSalesDb} from '../src/RetailAPI';
 
 import Icon from 'react-native-vector-icons/Fontisto';
 import DatePicker from 'react-native-datepicker';
@@ -37,6 +37,7 @@ function ModalEditSales() {
   const [date, setDate] = useState(salesItem.Date____);
   const [valOtherCde, setOtherCde] = useState(salesItem.OtherCde);
   const [valDescript, setDescript] = useState(salesItem.Descript);
+  const [valItemCode, setItemCode] = useState(salesItem.ItemCode);
   const [valQuantity, setQuantity] = useState(salesItem.Quantity.toString());
   const [valItemPrce, setItemPrce] = useState(salesItem.ItemPrce.toString());
 
@@ -74,6 +75,7 @@ function ModalEditSales() {
     );
     if (dataItem.length > 0) {
       setOtherCde(dataItem[0].OtherCde);
+      setItemCode(dataItem[0].ItemCode);
       setDescript(dataItem[0].Descript);
       setItemPrce(
         dataItem[0].ItemPrce.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'),
@@ -93,6 +95,7 @@ function ModalEditSales() {
     } else {
       setDescript('Item not in the masterfile');
       setItemPrce('0.00');
+      setItemCode('');
       setPickList([]); //Flatlist
     }
 
@@ -102,6 +105,7 @@ function ModalEditSales() {
 
   const selectFromList = item => {
     setOtherCde(item.OtherCde);
+    setItemCode(item.ItemCode);
     setDescript(item.Descript);
     setQuantity('1');
     setItemPrce(item.ItemPrce.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'));
@@ -186,9 +190,11 @@ function ModalEditSales() {
       Date____: date,
       Location: item.Location,
       DeviceId: item.DeviceId,
+      ItemCode: valItemCode,
     };
 
     saveSales(aSales); //RetailAPI
+    editSalesDb(aSales, item.RecordId); //RetailAPI
 
     const newSalesDtl = salesDtl.map(data =>
       data.RecordId === key

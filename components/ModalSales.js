@@ -18,7 +18,7 @@ import Highlighter from 'react-native-highlight-words';
 import DeviceInfo from 'react-native-device-info';
 
 import UserContext from './UserContext';
-import {saveSales} from '../src/RetailAPI';
+import {saveSales, addSalesDb} from '../src/RetailAPI';
 
 function ModalSales({storName = ''}) {
   const {
@@ -39,12 +39,14 @@ function ModalSales({storName = ''}) {
   const cOtherCde = '';
   const cDescript = '';
   const nQuantity = '1';
+  const cItemCode = '';
   const nItemPrce = '0.00';
 
   const [date, setDate] = useState(dDate____);
   const [valOtherCde, setOtherCde] = useState(cOtherCde);
   const [valDescript, setDescript] = useState(cDescript);
   const [valQuantity, setQuantity] = useState(nQuantity);
+  const [valItemCode, setItemCode] = useState(cItemCode);
   const [valItemPrce, setItemPrce] = useState(nItemPrce);
 
   const [textMessage, setMessage] = useState('');
@@ -72,8 +74,8 @@ function ModalSales({storName = ''}) {
       alertMsg('Enter bar code or description to search');
       return;
     }
-    if (valOtherCde.length < 5 && product.length > 100) {
-      alertMsg('Enter at least 5 chars to limit search');
+    if (valOtherCde.length < 4 && product.length > 100) {
+      alertMsg('Enter at least 4 chars to limit search');
       return;
     }
     let txtSearch = valOtherCde.trim();
@@ -85,6 +87,7 @@ function ModalSales({storName = ''}) {
     if (dataItem.length > 0) {
       setOtherCde(dataItem[0].OtherCde);
       setDescript(dataItem[0].Descript);
+      setItemCode(dataItem[0].ItemCode);
       setItemPrce(
         dataItem[0].ItemPrce.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'),
       );
@@ -102,6 +105,7 @@ function ModalSales({storName = ''}) {
       }
     } else {
       setDescript('Item not in the masterfile');
+      setItemCode('');
       setItemPrce('0.00');
       setPickList([]); //Flatlist
     }
@@ -113,6 +117,7 @@ function ModalSales({storName = ''}) {
   const selectFromList = item => {
     setOtherCde(item.OtherCde);
     setDescript(item.Descript);
+    setItemCode(item.ItemCode);
     setQuantity('1');
     setItemPrce(item.ItemPrce.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'));
   };
@@ -160,6 +165,7 @@ function ModalSales({storName = ''}) {
       RecordId: cRecordId,
       Date____: dDate____,
       Quantity: Number(valQuantity),
+      ItemCode: valItemCode,
       OtherCde: valOtherCde,
       Descript: valDescript,
       ItemPrce: Number(valItemPrce.replace(/,|_/g, '')),
@@ -167,6 +173,8 @@ function ModalSales({storName = ''}) {
       DeviceId: deviceId,
     };
     saveSales(aSales); //RetailAPI
+    addSalesDb(aSales);
+
     salesDtl.unshift(aSales);
 
     // setSalesDtl(prevSales => {
@@ -192,6 +200,7 @@ function ModalSales({storName = ''}) {
     setOtherCde('');
     setDescript('');
     setQuantity('');
+    setItemCode('');
     setItemPrce('');
 
     setModalOpen(false);

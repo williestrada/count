@@ -21,7 +21,15 @@ import ModalQuantity from './ModalQuantity';
 import ProductPickList from './ProductPickList';
 import CountBarcodeInput from './CountBarcodeInput';
 
-import {saveCount, deleteCount, countToCSV, array_move} from '../src/RetailAPI';
+import {
+  saveCount,
+  deleteCount,
+  countToCSV,
+  array_move,
+  addCountDb,
+  deleteCountDb,
+  editCountDb,
+} from '../src/RetailAPI';
 
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -87,7 +95,7 @@ function Count({navigation}) {
   };
 
   async function fetchCount() {
-    // setLoading(true);
+    setLoading(true);
     await AsyncStorage.getAllKeys((err, keys) => {
       AsyncStorage.multiGet(keys, (err, count) => {
         const newData = [];
@@ -101,6 +109,7 @@ function Count({navigation}) {
             let OtherCde = aCount.OtherCde;
             let Descript = aCount.Descript;
             let Quantity = aCount.Quantity;
+            let ItemCode = aCount.ItemCode;
 
             let Date____ = aCount.Date____;
             let Location = aCount.Location;
@@ -115,6 +124,7 @@ function Count({navigation}) {
                 OtherCde,
                 Descript,
                 Quantity,
+                ItemCode,
                 Date____,
                 Location,
                 UserName,
@@ -127,7 +137,7 @@ function Count({navigation}) {
         });
         setCountDtl(countDtl.concat(newData));
         setTotalQty(ntotalCount);
-        setLoading(false);
+        //setLoading(false);
       });
     });
   }
@@ -183,12 +193,14 @@ function Count({navigation}) {
     let cOtherCde = valOtherCde;
     let cDescript = 'Item is not in the masterfile';
     let nQuantity = 1;
+    let cItemCode = '';
     let cRecordId = Date.now();
     let dDate____ = moment().format('L') + ' ' + moment().format('LT');
 
     if (dataList.length > 0) {
       cOtherCde = item.OtherCde;
       cDescript = item.Descript;
+      cItemCode = item.ItemCode;
     }
 
     // check if item exist on listed array
@@ -210,6 +222,7 @@ function Count({navigation}) {
       OtherCde: cOtherCde,
       Descript: cDescript,
       Quantity: nQuantity,
+      ItemCode: cItemCode,
       Date____: dDate____,
       Location: cLocation,
       UserName: cUserName,
@@ -220,10 +233,9 @@ function Count({navigation}) {
     saveCount(newCount); //RetailAPI
     if (nIndex < 0) {
       countDtl.unshift(newCount);
-      // let newData = countDtl.unshift(newCount);
-      // setCountDtl(prevCount => {
-      //   return [...prevCount, newCount];
-      // });
+      addCountDb(newCount);
+    } else {
+      editCountDb(newCount, cRecordId);
     }
 
     setTotalQty(totalQty + 1);
@@ -238,6 +250,8 @@ function Count({navigation}) {
 
   const delCountData = item => {
     deleteCount(item.RecordId); //RetailAPI
+    deleteCountDb(item.RecordId); //RetailAPI
+
     setCountDtl(prevCount => {
       return prevCount.filter(data => data.RecordId != item.RecordId);
     });
@@ -341,6 +355,7 @@ function Count({navigation}) {
       let OtherCde = aCount.OtherCde;
       let Descript = aCount.Descript;
       let Quantity = Number(aCount.Quantity);
+      let ItemCode = aCount.ItemCode;
       let Location = aCount.Location;
       let UserName = aCount.UserName;
       let DeviceId = aCount.DeviceId;
@@ -353,6 +368,7 @@ function Count({navigation}) {
           OtherCde,
           Descript,
           Quantity,
+          ItemCode,
           Location,
           UserName,
           DeviceId,
@@ -365,6 +381,7 @@ function Count({navigation}) {
         OtherCde: OtherCde,
         Descript: Descript,
         Quantity: Quantity,
+        ItemCode: ItemCode,
         Date____: Date____,
         Location: Location,
         UserName: UserName,
@@ -405,22 +422,6 @@ function Count({navigation}) {
     }
     return result;
   }
-
-  // function array_move(arr, old_index, new_index) {
-  //   while (old_index < 0) {
-  //     old_index += arr.length;
-  //   }
-  //   while (new_index < 0) {
-  //     new_index += arr.length;
-  //   }
-  //   if (new_index >= arr.length) {
-  //     var k = new_index - arr.length + 1;
-  //     while (k--) {
-  //       arr.push(undefined);
-  //     }
-  //   }
-  //   arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
-  // }
 
   function ItemList({item, index}) {
     let nIndex = index + 1;

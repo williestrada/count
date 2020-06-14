@@ -18,7 +18,7 @@ import CountData from './CountData';
 import UserContext from './UserContext';
 import ModalSales from './ModalSales';
 import ModalEditSales from './ModalEditSales';
-import {deleteSales, salesToCSV, fetchSalesDb} from '../src/RetailAPI';
+import {deleteSales, salesToCSV, deleteSalesDb} from '../src/RetailAPI';
 
 import AsyncStorage from '@react-native-community/async-storage';
 import Icon from 'react-native-vector-icons/Fontisto';
@@ -51,7 +51,6 @@ function Sales({navigation}) {
     console.log('Rendering Sales component');
     storeName(); //show store name on top <DateInfo />
     //fetchSales();
-    //fetchSalesData();
     const backAction = () => {
       Alert.alert('Hold on!', 'Do you want to exit InfoPlus?', [
         {
@@ -72,11 +71,6 @@ function Sales({navigation}) {
     return () => backHandler.remove();
   }, []);
 
-  async function fetchSalesData() {
-    const data = await fetchSalesDb();
-    //console.log('fetched sales', data);
-  }
-
   async function fetchSales() {
     setLoading(true);
     await AsyncStorage.getAllKeys((err, keys) => {
@@ -94,6 +88,7 @@ function Sales({navigation}) {
             let OtherCde = aSales.OtherCde;
             let Descript = aSales.Descript;
             let Quantity = aSales.Quantity;
+            let ItemCode = aSales.ItemCode;
             let ItemPrce = aSales.ItemPrce;
             let Location = aSales.Location;
             let DeviceId = aSales.DeviceId;
@@ -106,6 +101,7 @@ function Sales({navigation}) {
                 OtherCde,
                 Descript,
                 Quantity,
+                ItemCode,
                 ItemPrce,
                 Location,
                 DeviceId,
@@ -139,7 +135,10 @@ function Sales({navigation}) {
   const deleteItem = item => {
     let ntotalSales = item.Quantity * item.ItemPrce;
     setTotalSales(totalSales - ntotalSales); //CountData
+
     deleteSales(item.RecordId); //RetailAPI
+    deleteSalesDb(item.RecordId);
+
     setSalesDtl(prevSales => {
       return prevSales.filter(val => val.RecordId != item.RecordId);
     });
@@ -259,6 +258,7 @@ function Sales({navigation}) {
       let Descript = aSales.Descript;
       let Quantity = Number(aSales.Quantity);
       let ItemPrce = Number(aSales.ItemPrce);
+      let ItemCode = aSales.ItemCode;
       let Location = aSales.Location;
       let DeviceId = aSales.DeviceId;
 
@@ -270,6 +270,7 @@ function Sales({navigation}) {
           OtherCde,
           Descript,
           Quantity,
+          ItemCode,
           ItemPrce,
           Location,
           DeviceId,
@@ -282,6 +283,7 @@ function Sales({navigation}) {
         OtherCde: OtherCde,
         Descript: Descript,
         Quantity: Quantity,
+        ItemCode: ItemCode,
         ItemPrce: ItemPrce,
         Date____: Date____,
         Location: Location,

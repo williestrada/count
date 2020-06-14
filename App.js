@@ -27,7 +27,7 @@ export default function App() {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalEditOpen, setModalEditOpen] = useState(false);
   const [totalSales, setTotalSales] = useState(0); //Just for CountData
-  const [clearData, setClearData] = useState(true);
+  const [clearData, setClearData] = useState(false);
   // const [settings, setSettings] = useState(['', '', '', true]);
 
   useEffect(() => {
@@ -94,7 +94,8 @@ export default function App() {
             let Descript = cDescript;
             let OtherCde = mFile.OtherCde;
             let ItemPrce = mFile.ItemPrce;
-            const dataProduct = {OtherCde, Descript, ItemPrce};
+            let ItemCode = mFile.ItemCode;
+            const dataProduct = {OtherCde, Descript, ItemPrce, ItemCode};
             newData.push(dataProduct);
           }
         });

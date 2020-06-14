@@ -67,7 +67,7 @@ export default function Settings({navigation}) {
       //return file;
     } catch (err) {
       if (DocumentPicker.isCancel(err)) {
-        setMastFile('');
+        setMastFile(valMastFile);
         //return ''
       } else {
         Alert.alert('Unknown Error: ' + JSON.stringify(err));
@@ -206,6 +206,8 @@ export default function Settings({navigation}) {
                 borderWidth: 1,
                 borderColor: 'white',
                 borderRadius: 8,
+                paddingLeft: 5,
+                marginLeft: 0,
                 //                width: 100,
               }}
               size={18}
@@ -218,7 +220,8 @@ export default function Settings({navigation}) {
                 style={{
                   color: 'white',
                   fontFamily: 'Arial',
-                  fontSize: 10,
+                  paddingLeft: 0,
+                  fontSize: 12,
                 }}>
                 json
               </Text>
